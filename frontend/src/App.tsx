@@ -1,11 +1,11 @@
 import "./App.css";
 import SuperTokens, { SuperTokensWrapper } from "supertokens-auth-react";
-import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
-import { SessionAuth } from "supertokens-auth-react/recipe/session";
 import { Routes, BrowserRouter as Router, Route } from "react-router-dom";
 import Home from "./Home";
-import { PreBuiltUIList, SuperTokensConfig, ComponentWrapper } from "./config";
+import { SuperTokensConfig, ComponentWrapper } from "./config";
 import Auth from "./Auth";
+import Tenants from "./Tenants";
+import TenantId from "./TenantId";
 
 SuperTokens.init(SuperTokensConfig);
 
@@ -17,9 +17,11 @@ function App() {
                     <Router>
                         <div className="fill">
                             <Routes>
+                                <Route path="/" element={<Home />}/>
                                 {/* This shows the login UI on "/auth" route */}
                                 <Route path="/auth/*" element={<Auth />} />
-                                <Route path="/" element={<Home />}/>
+                                <Route path="/tenants" element={<Tenants />} />
+                                <Route path="/tenants/:id" element={<TenantId />} />
                             </Routes>
                         </div>
                     </Router>

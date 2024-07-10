@@ -11,7 +11,6 @@ supertokens.init(SuperTokensConfig);
 
 const app = express();
 
-app.use(express.json())
 
 app.use(
     cors({
@@ -25,6 +24,7 @@ app.use(
 // This exposes all the APIs from SuperTokens to the client.
 app.use(middleware());
 
+app.use(express.json())
 // An example API that requires session verification
 app.get("/sessioninfo", verifySession(), async (req: SessionRequest, res) => {
     let session = req.session;
@@ -43,19 +43,37 @@ app.get("/tenants", async (req, res) => {
 });
 
 app.post("/tenants", async (req, res) => {
-    console.log(req.body)
-    let resp = await Multitenancy.createOrUpdateTenant(req.body.tenantId, {
-        emailPasswordEnabled: req.body.emailPassword,
-        thirdPartyEnabled: req.body.social,
-        passwordlessEnabled: req.body.OTP
-    });
-
-    if (resp.createdNew) {
-        // Tenant created successfully
-        const rolesResponse = await UserRoles.createNewRoleOrAddPermissions(req.body.tenantId, ["read", "write"])
+    try {
+        let resp = await Multitenancy.createOrUpdateTenant(req.body.tenantId, {
+            emailPasswordEnabled: req.body.emailPassword,
+            thirdPartyEnabled: req.body.social,
+            passwordlessEnabled: req.body.OTP
+        });
+    
+        if (resp.createdNew) {
+            // Tenant created successfully
+            const rolesResponse = await UserRoles.createNewRoleOrAddPermissions(req.body.tenantId, ["read", "write"])
+        }
+        res.send(JSON.stringify({tenantId: req.body.tenantId}))
+    } catch(e) {
+        res.send(e)
     }
-    res.send(JSON.stringify({tenantId: req.body.tenantId}))
 });
+
+app.get("/tenants/:id", verifySession(), async (req: SessionRequest, res) => {
+    try {
+        // should be mulitple tenant ids to loop through maybe? check this
+        let userOrg = req.session!.getTenantId()
+        if (req.params.id !== userOrg) {
+            res.send("unauthorised")
+            return
+        }
+        let tenant = await Multitenancy.getTenant(req.params.id)
+        res.send(tenant)
+    } catch(e) {
+        res.send(e)
+    }
+})
 
 // In case of session related errors, this error handler
 // returns 401 to the client.
