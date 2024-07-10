@@ -21,7 +21,7 @@ export default function Tenants() {
   
   return (
     <div style={{display: "flex", flexDirection: "column", margin: "auto"}}>
-      <p>Click the org you're signed into to see information about it</p>
+      <p>Click the org you're signed into to see information about it. Other routes are unauthorised</p>
       {tenants.map((i: any, index) => {
         return (
           <Link to={`/tenants/${i}`} key={index}>{i}</Link>

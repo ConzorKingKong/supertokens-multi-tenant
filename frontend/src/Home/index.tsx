@@ -100,6 +100,7 @@ export default function Home() {
     return (
         <div className="fill" id="home-container">
             {sessionContext.doesSessionExist && <button onClick={onLogout} style={{position: "absolute", top: 0, right: 0, border: "none", fontSize: "2em", backgroundColor: "inherit"}}>Logout</button>}
+            {sessionContext.doesSessionExist && <Link to="/tenants"><h2>Check the tenants list for protected urls</h2></Link>}
             {sessionContext.doesSessionExist && <SuccessView userId={sessionContext.userId} />}
         </div>
     );
