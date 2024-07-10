@@ -5,10 +5,13 @@ import { verifySession } from "supertokens-node/recipe/session/framework/express
 import { middleware, errorHandler, SessionRequest } from "supertokens-node/framework/express";
 import { getWebsiteDomain, SuperTokensConfig } from "./config";
 import Multitenancy from "supertokens-node/recipe/multitenancy";
+import UserRoles from "supertokens-node/recipe/userroles";
 
 supertokens.init(SuperTokensConfig);
 
 const app = express();
+
+app.use(express.json())
 
 app.use(
     cors({
@@ -37,6 +40,20 @@ app.get("/sessioninfo", verifySession(), async (req: SessionRequest, res) => {
 app.get("/tenants", async (req, res) => {
     let tenants = await Multitenancy.listAllTenants();
     res.send(tenants);
+});
+
+app.post("/tenants", async (req, res) => {
+    console.log(req.body)
+    let resp = await Multitenancy.createOrUpdateTenant(req.body.tenantId, {
+        emailPasswordEnabled: req.body.emailPassword,
+        thirdPartyEnabled: req.body.social
+    });
+
+    if (resp.createdNew) {
+        // Tenant created successfully
+        const rolesResponse = await UserRoles.createNewRoleOrAddPermissions(req.body.tenantId, ["read", "write"])
+    }
+    res.send(JSON.stringify({tenantId: req.body.tenantId}))
 });
 
 // In case of session related errors, this error handler

@@ -5,6 +5,7 @@ import { signOut } from "supertokens-auth-react/recipe/session";
 import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { getApiDomain } from "../config";
 
 export default function Home() {
     const sessionContext = useSessionContext();
@@ -24,11 +25,17 @@ export default function Home() {
     
     async function createOrg(e: React.SyntheticEvent) {
         e.preventDefault()
-        // axios.post("http://localhost:3001/tenants", {tenantId: org})
-        // .then(res => {
-        //     localStorage.setItem("tenantId", org)
-        //     console.log(res)
-        // })
+        axios.post(getApiDomain() + "/tenants", {
+            tenantId: org,
+            emailPassword,
+            social,
+            MFA,
+            OTP
+        })
+        .then(res => {
+            // localStorage.setItem("tenantId", org)
+            // console.log(res)
+        })
     }
 
     async function onLogout() {

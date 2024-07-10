@@ -32,8 +32,64 @@ export const SuperTokensConfig: TypeInput = {
     // recipeList contains all the modules that you want to
     // use from SuperTokens. See the full list here: https://supertokens.com/docs/guides
     recipeList: [
-        EmailPassword.init(),
+        EmailPassword.init({
+            override: {
+                functions: (originalImplementation) => {
+                    return {
+                        ...originalImplementation,
+
+                        // override the email password sign up function
+                        signUp: async function (input) {
+                            // TODO: some pre sign up logic
+
+                            let response = await originalImplementation.signUp(input);
+
+                            if (response.status === "OK" && response.user.loginMethods.length === 1 && input.session === undefined) {
+                                // TODO: some post sign up logic
+                                const roleResponse = await UserRoles.addRoleToUser(response.user.tenantIds[0], response.user.id, response.user.tenantIds[0])
+                                console.log(roleResponse)
+                            }
+
+                            return response;
+                        }
+                    }
+                }
+            }
+        }),
         ThirdParty.init({
+            override: {
+                functions: (originalImplementation) => {
+                    return {
+                        ...originalImplementation,
+
+                        // override the thirdparty sign in / up function
+                        signInUp: async function (input) {
+                            // TODO: Some pre sign in / up logic
+
+                            let response = await originalImplementation.signInUp(input);
+
+                            if (response.status === "OK") {
+
+                                let accessToken = response.oAuthTokens["access_token"];
+
+                                let firstName = response.rawUserInfoFromProvider.fromUserInfoAPI!["first_name"];
+
+                                if (input.session === undefined) {
+                                    if (response.createdNewRecipeUser && response.user.loginMethods.length === 1) {
+                                        // TODO: some post sign up logic
+                                        const roleResponse = await UserRoles.addRoleToUser(response.user.tenantIds[0], response.user.id, response.user.tenantIds[0])
+                                        console.log(roleResponse)
+                                    } else {
+                                        // TODO: some post sign in logic
+                                    }
+                                }
+                            }
+
+                            return response;
+                        }
+                    }
+                }
+            },
             signInAndUpFeature: {
                 providers: [
                     // We have provided you with development keys which you can use for testing.
