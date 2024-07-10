@@ -25,6 +25,7 @@ app.use(
 app.use(middleware());
 
 app.use(express.json())
+
 // An example API that requires session verification
 app.get("/sessioninfo", verifySession(), async (req: SessionRequest, res) => {
     let session = req.session;
@@ -43,16 +44,39 @@ app.get("/tenants", async (req, res) => {
 });
 
 app.post("/tenants", async (req, res) => {
+    const {tenantId, emailPasswordEnabled, thirdPartyEnabled, passwordlessEnabled, MFA, TOTP, phone, email} = req.body
+    let tenantBody
+    let firstFactors = []
+    let requiredSecondaryFactors = []
+    if (MFA) {
+        if (TOTP) requiredSecondaryFactors.push("totp")
+        if (phone) requiredSecondaryFactors.push("otp-phone")
+        if (email) requiredSecondaryFactors.push("otp-email")
+        if (emailPasswordEnabled) firstFactors.push("emailpassword")
+        if (thirdPartyEnabled) firstFactors.push("thirdparty")
+        tenantBody = {
+          emailPasswordEnabled,
+          thirdPartyEnabled,
+          passwordlessEnabled,
+          firstFactors,
+          requiredSecondaryFactors,
+        }
+    } else {
+      tenantBody = {
+        emailPasswordEnabled,
+        thirdPartyEnabled,
+        passwordlessEnabled,
+      }
+    }
+
+    console.log(tenantBody)
+
     try {
-        let resp = await Multitenancy.createOrUpdateTenant(req.body.tenantId, {
-            emailPasswordEnabled: req.body.emailPassword,
-            thirdPartyEnabled: req.body.social,
-            passwordlessEnabled: req.body.OTP
-        });
-    
+        let resp = await Multitenancy.createOrUpdateTenant(tenantId, tenantBody);
+
         if (resp.createdNew) {
             // Tenant created successfully
-            const rolesResponse = await UserRoles.createNewRoleOrAddPermissions(req.body.tenantId, ["read", "write"])
+            const rolesResponse = await UserRoles.createNewRoleOrAddPermissions(tenantId, ["read", "write"])
         }
         res.send(JSON.stringify({tenantId: req.body.tenantId}))
     } catch(e) {

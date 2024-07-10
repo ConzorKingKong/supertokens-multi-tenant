@@ -65,8 +65,8 @@ export const SuperTokensConfig: TypeInput = {
             }
         }),
         Passwordless.init({
-            flowType: "USER_INPUT_CODE",
-            contactMethod: "PHONE"
+            contactMethod: "EMAIL_OR_PHONE",
+            flowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
         }),
         EmailPassword.init({
             override: {

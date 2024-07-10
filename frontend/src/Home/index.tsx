@@ -10,10 +10,13 @@ import { getApiDomain } from "../config";
 export default function Home() {
     const sessionContext = useSessionContext();
     const [org, setOrg] = useState("")
-    const [emailPassword, setEmailPassword] = useState(false)
-    const [social, setSocial] = useState(false)
+    const [thirdPartyEnabled, setThirdPartyEnabled] = useState(false)
+    const [emailPasswordEnabled, setEmailPasswordEnabled] = useState(false)
+    const [passwordlessEnabled, setPasswordlessEnabled] = useState(false) 
     const [MFA, setMFA] = useState(false)
-    const [OTP, setOTP] = useState(false) 
+    const [TOTP, setTOTP] = useState(false)
+    const [phone, setPhone] = useState(false)
+    const [email, setEmail] = useState(false)
 
     if (sessionContext.loading === true) {
         return null;
@@ -27,10 +30,13 @@ export default function Home() {
         e.preventDefault()
         axios.post(getApiDomain() + "/tenants", {
             tenantId: org,
-            emailPassword,
-            social,
+            emailPasswordEnabled,
+            thirdPartyEnabled,
             MFA,
-            OTP
+            passwordlessEnabled,
+            TOTP,
+            phone,
+            email
         })
         .then(res => {
             localStorage.setItem("tenantId", org)
@@ -53,21 +59,37 @@ export default function Home() {
                     <form onSubmit={(e) => {createOrg(e)}} style={{display: "flex", flexDirection: "column"}}>
                         <input value={org} onChange={handleOnChange} name="organisation"/>
                         <label>
-                            <input type="checkbox" id="checkbox" checked={emailPassword} onChange={() => {setEmailPassword(!emailPassword)}} />
-                            Email and password login
-                        </label>
-                        <label>
-                            <input type="checkbox" id="checkbox" checked={social} onChange={() => {setSocial(!social)}} />
+                            <input type="checkbox" id="checkbox" checked={thirdPartyEnabled} onChange={() => {setThirdPartyEnabled(!thirdPartyEnabled)}} />
                             Oauth login
                         </label>
                         <label>
-                            <input type="checkbox" id="checkbox" checked={MFA} onChange={() => {setMFA(!MFA)}} />
-                            MFA
+                            <input type="checkbox" id="checkbox" checked={emailPasswordEnabled} onChange={() => {setEmailPasswordEnabled(!emailPasswordEnabled)}} />
+                            Email and password login
                         </label>
                         <label>
-                            <input type="checkbox" id="checkbox" checked={OTP} onChange={() => {setOTP(!OTP)}} />
+                            <input type="checkbox" id="checkbox" checked={passwordlessEnabled || MFA} disabled={MFA} onChange={() => {setPasswordlessEnabled(!passwordlessEnabled)}} />
                             One-time Password
                         </label>
+                        <label>
+                            <input type="checkbox" id="checkbox" checked={MFA} onChange={() => {setMFA(!MFA); setPasswordlessEnabled(true)}} />
+                            MFA
+                        </label>
+                        {MFA && (
+                            <>
+                                <label>
+                                    <input type="checkbox" id="checkbox" checked={TOTP} onChange={() => {setTOTP(!TOTP)}} />
+                                    TOTP
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="checkbox" checked={phone} onChange={() => {setPhone(!phone)}} />
+                                    OTP Phone
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="checkbox" checked={email} onChange={() => {setEmail(!email)}} />
+                                    OTP Email
+                                </label>
+                            </>
+                        )}
                         <button type="submit">Create org</button>
                     </form>
                 </div>

@@ -7,6 +7,7 @@ import { EmailPasswordPreBuiltUI } from 'supertokens-auth-react/recipe/emailpass
 import { PasswordlessPreBuiltUI } from "supertokens-auth-react/recipe/passwordless/prebuiltui";
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
 import { TOTPPreBuiltUI } from "supertokens-auth-react/recipe/totp/prebuiltui";
+import { MultiFactorAuthPreBuiltUI } from "supertokens-auth-react/recipe/multifactorauth/prebuiltui";
 
 export default function Auth() {
     const location = reactRouterDom.useLocation();
@@ -31,7 +32,7 @@ export default function Auth() {
             <Routes>
                 {getSuperTokensRoutesForReactRouterDom(
                     reactRouterDom,
-                    [ThirdPartyPreBuiltUI, EmailPasswordPreBuiltUI, PasswordlessPreBuiltUI, TOTPPreBuiltUI],
+                    [ThirdPartyPreBuiltUI, EmailPasswordPreBuiltUI, PasswordlessPreBuiltUI, MultiFactorAuthPreBuiltUI, TOTPPreBuiltUI],
                     "/auth"
                 )}
             </Routes>
