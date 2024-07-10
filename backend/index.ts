@@ -76,7 +76,7 @@ app.post("/tenants", async (req, res) => {
 
         if (resp.createdNew) {
             // Tenant created successfully
-            const rolesResponse = await UserRoles.createNewRoleOrAddPermissions(tenantId, ["read", "write"])
+            const rolesResponse = await UserRoles.createNewRoleOrAddPermissions(tenantId, ["read"])
         }
         res.send(JSON.stringify({tenantId: req.body.tenantId}))
     } catch(e) {
