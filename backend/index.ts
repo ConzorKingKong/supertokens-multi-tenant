@@ -69,8 +69,6 @@ app.post("/tenants", async (req, res) => {
       }
     }
 
-    console.log(tenantBody)
-
     try {
         let resp = await Multitenancy.createOrUpdateTenant(tenantId, tenantBody);
 

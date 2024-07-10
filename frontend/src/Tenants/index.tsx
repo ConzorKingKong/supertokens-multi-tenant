@@ -20,7 +20,8 @@ export default function Tenants() {
   }, [])
   
   return (
-    <div>
+    <div style={{display: "flex", flexDirection: "column", margin: "auto"}}>
+      <p>Click the org you're signed into to see information about it</p>
       {tenants.map((i: any, index) => {
         return (
           <Link to={`/tenants/${i}`} key={index}>{i}</Link>

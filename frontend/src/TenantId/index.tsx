@@ -10,7 +10,7 @@ export default function TenantId() {
   async function getTenant() {
     try {
       let tenant = await axios.get(getApiDomain() + `/tenants/${id}`, {withCredentials: true})
-      console.log(tenant.data)
+
       if (tenant.data === "unauthorised") {
         setDisplay("Unauthorised")
         return
@@ -27,7 +27,7 @@ export default function TenantId() {
   }, [])
 
   return (
-    <div>
+    <div style={{margin: "auto"}}>
       {display}
     </div>
   )
