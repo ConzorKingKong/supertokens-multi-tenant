@@ -5,6 +5,14 @@ import { TypeInput } from "supertokens-node/types";
 import Dashboard from "supertokens-node/recipe/dashboard";
 import UserRoles from "supertokens-node/recipe/userroles";
 import Passwordless from "supertokens-node/recipe/passwordless";
+import AccountLinking from "supertokens-node/recipe/accountlinking";
+import { AccountInfoWithRecipeId } from "supertokens-node/recipe/accountlinking/types";
+import { RecipeUserId, User } from "supertokens-node";
+import { SessionContainerInterface } from "supertokens-node/recipe/session/types";
+import { UserContext } from "supertokens-node/types";
+import MultiFactorAuth from "supertokens-node/recipe/multifactorauth"
+import totp from "supertokens-node/recipe/totp"
+
 
 export function getApiDomain() {
     const apiPort = process.env.REACT_APP_API_PORT || 3001;
@@ -21,7 +29,7 @@ export function getWebsiteDomain() {
 export const SuperTokensConfig: TypeInput = {
     supertokens: {
         // this is the location of the SuperTokens core.
-        connectionURI: "http://localhost:3567",
+        connectionURI: "http://localhost:3567"
     },
     appInfo: {
         appName: "org",
@@ -33,6 +41,29 @@ export const SuperTokensConfig: TypeInput = {
     // recipeList contains all the modules that you want to
     // use from SuperTokens. See the full list here: https://supertokens.com/docs/guides
     recipeList: [
+        AccountLinking.init({
+            shouldDoAutomaticAccountLinking: async (newAccountInfo: AccountInfoWithRecipeId & { recipeUserId?: RecipeUserId }, user: User | undefined, session: SessionContainerInterface | undefined, tenantId: string, userContext: UserContext) => {
+                if (session === undefined) {
+                    // we do not want to do first factor account linking by default. To enable that,
+                    // please see the automatic account linking docs in the recipe docs for your first factor.
+                    return {
+                        shouldAutomaticallyLink: false
+                    };
+                }
+                if (user === undefined || session.getUserId() === user.id) {
+                    // if it comes here, it means that a session exists, and we are trying to link the 
+                    // newAccountInfo to the session user, which means it's an MFA flow, so we enable 
+                    // linking here.
+                    return {
+                        shouldAutomaticallyLink: true,
+                        shouldRequireVerification: false
+                    }
+                }
+                return {
+                    shouldAutomaticallyLink: false
+                };
+            }
+        }),
         Passwordless.init({
             flowType: "USER_INPUT_CODE",
             contactMethod: "PHONE"
@@ -116,5 +147,7 @@ export const SuperTokensConfig: TypeInput = {
         Session.init(),
         Dashboard.init(),
         UserRoles.init(),
+        MultiFactorAuth.init(),
+        totp.init(),
     ],
 };

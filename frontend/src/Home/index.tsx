@@ -33,8 +33,8 @@ export default function Home() {
             OTP
         })
         .then(res => {
-            // localStorage.setItem("tenantId", org)
-            // console.log(res)
+            localStorage.setItem("tenantId", org)
+            window.location.href = "/auth"
         })
     }
 
