@@ -46,7 +46,8 @@ app.post("/tenants", async (req, res) => {
     console.log(req.body)
     let resp = await Multitenancy.createOrUpdateTenant(req.body.tenantId, {
         emailPasswordEnabled: req.body.emailPassword,
-        thirdPartyEnabled: req.body.social
+        thirdPartyEnabled: req.body.social,
+        passwordlessEnabled: req.body.OTP
     });
 
     if (resp.createdNew) {

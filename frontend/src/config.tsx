@@ -4,6 +4,7 @@ import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
 import Session from "supertokens-auth-react/recipe/session";
 import Multitenancy from "supertokens-auth-react/recipe/multitenancy";
+import Passwordless from "supertokens-auth-react/recipe/passwordless";
 
 export function getApiDomain() {
     const apiPort = process.env.REACT_APP_API_PORT || 3001;
@@ -29,6 +30,9 @@ export const SuperTokensConfig = {
     // recipeList contains all the modules that you want to
     // use from SuperTokens. See the full list here: https://supertokens.com/docs/guides
     recipeList: [
+        Passwordless.init({
+            contactMethod: "PHONE"
+        }),
         EmailPassword.init(),
         ThirdParty.init({
             signInAndUpFeature: {

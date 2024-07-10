@@ -4,6 +4,7 @@ import { Routes } from "react-router-dom";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
 import { ThirdPartyPreBuiltUI } from 'supertokens-auth-react/recipe/thirdparty/prebuiltui';
 import { EmailPasswordPreBuiltUI } from 'supertokens-auth-react/recipe/emailpassword/prebuiltui';
+import { PasswordlessPreBuiltUI } from "supertokens-auth-react/recipe/passwordless/prebuiltui";
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
 
 export default function Auth() {
@@ -29,7 +30,7 @@ export default function Auth() {
             <Routes>
                 {getSuperTokensRoutesForReactRouterDom(
                     reactRouterDom,
-                    [ThirdPartyPreBuiltUI, EmailPasswordPreBuiltUI],
+                    [ThirdPartyPreBuiltUI, EmailPasswordPreBuiltUI, PasswordlessPreBuiltUI],
                     "/auth"
                 )}
             </Routes>

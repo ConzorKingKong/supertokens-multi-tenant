@@ -4,6 +4,7 @@ import Session from "supertokens-node/recipe/session";
 import { TypeInput } from "supertokens-node/types";
 import Dashboard from "supertokens-node/recipe/dashboard";
 import UserRoles from "supertokens-node/recipe/userroles";
+import Passwordless from "supertokens-node/recipe/passwordless";
 
 export function getApiDomain() {
     const apiPort = process.env.REACT_APP_API_PORT || 3001;
@@ -32,6 +33,10 @@ export const SuperTokensConfig: TypeInput = {
     // recipeList contains all the modules that you want to
     // use from SuperTokens. See the full list here: https://supertokens.com/docs/guides
     recipeList: [
+        Passwordless.init({
+            flowType: "USER_INPUT_CODE",
+            contactMethod: "PHONE"
+        }),
         EmailPassword.init({
             override: {
                 functions: (originalImplementation) => {
